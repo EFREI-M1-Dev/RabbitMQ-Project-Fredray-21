@@ -1,0 +1,20 @@
+{
+    "compilerOptions": {
+      "lib": [
+        "ESNext",
+        "dom"
+      ], 
+      "outDir": "dist",
+      "removeComments": true, 
+      "target": "ES6", 
+      "baseUrl": "./", 
+      "esModuleInterop": true, 
+      "moduleResolution": "node", 
+      "paths": {},
+    },
+    "include": ["**/*.ts"],
+    "exclude": [
+      "node_modules/**/*"
+    ],
+    "baseUrl": ".",
+  }
