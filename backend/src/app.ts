@@ -48,21 +48,21 @@ const connectToRabbitMQ = () => {
                 throw error1;
             }
 
-            channel.assertExchange(EXCHANGE_APP, 'direct', { durable: true });
+            channel.assertExchange(EXCHANGE_APP, 'fanout', { durable: true });
 
             io.on('connection', (socket) => {
                 consola.info('Client connected');
 
                 const userId = socket.handshake.query.userId;
                 const userQueue = `queue_${userId}`;
-                const userRoutingKey = `key_${userId}`;
+                // const userRoutingKey = `key_${userId}`;
 
                 // Assert user's queue
                 channel.assertQueue(userQueue, { durable: true });
-                channel.bindQueue(userQueue, EXCHANGE_APP, userRoutingKey);
+                channel.bindQueue(userQueue, EXCHANGE_APP, '');
 
                 // Create consumer for user's queue
-                const consumerTag = channel.consume(
+                channel.consume(
                     userQueue,
                     (message) => {
                         if (!message || message.content.toString().trim() === '') return;
@@ -76,15 +76,13 @@ const connectToRabbitMQ = () => {
                             throw error2;
                         }
                         activeConsumers.set(userId, consumerTag);
+                        consola.info(`Consumer created for user ${userId}`);
                     }
                 );
 
-                // Store the consumer tag for later cleanup
-                activeConsumers.set(userId, consumerTag);
 
                 socket.on('chat message', (msg) => {
                     consola.info(`Received message from client: ${msg}`);
-                    // Publish message to the exchange with empty routing key
                     channel.publish(EXCHANGE_APP, '', Buffer.from(msg), { persistent: true });
                     consola.info(`Sent message to RabbitMQ: ${msg}`);
                 });
@@ -92,7 +90,6 @@ const connectToRabbitMQ = () => {
                 socket.on('disconnect', () => {
                     consola.info('Client disconnected');
 
-                    // Clean up resources (e.g., stop consuming messages)
                     const consumerTag = activeConsumers.get(userId);
                     if (consumerTag) {
                         channel.cancel(consumerTag, (error3) => {
@@ -115,3 +112,9 @@ connectToRabbitMQ();
 server.listen(PORT, () => {
     consola.success(`Server started on port ${PORT}`);
 });
+
+
+//TODO:
+// - FAIRE LE FRONT
+// - Ajouter une BDD pour les utilisateurs
+// - Ajouter une BDD pour les messages
