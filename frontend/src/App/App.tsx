@@ -12,6 +12,7 @@ const App = () => {
   const [message, setMessage] = useState('');
   const [messages, setMessages] = useState<Message[]>([]);
   const [userId, setUserId] = useState<string | null>(null);
+  const [connectedUsers, setConnectedUsers] = useState<string[]>([]);
   const socketRef = useRef<any>(null);
   const chatMsgRef = useRef<HTMLDivElement>(null);
 
@@ -31,7 +32,11 @@ const App = () => {
 
       socket.on('chat message', (msg) => {
         console.log('Received message from server:', msg);
-        setMessages(prevMessages => [msg, ...prevMessages]); // Add new message at the start
+        setMessages(prevMessages => [msg, ...prevMessages]);
+      });
+
+      socket.on('update users', (users) => {
+        setConnectedUsers(users);
       });
 
       return () => {
@@ -59,6 +64,15 @@ const App = () => {
     }
   };
 
+  const getBackgroundColor = (username: string) => {
+    let hash = 0;
+    for (let i = 0; i < username.length; i++) {
+      hash = username.charCodeAt(i) + ((hash << 5) - hash);
+    }
+    const color = `hsl(${hash % 360}, 70%, 70%)`;
+    return color;
+  };
+
   return (
     <div className={styles.body}>
       {!userId ? (<Auth isLogin={isLogin} toogleForm={setToogleForm} />) : (
@@ -68,7 +82,16 @@ const App = () => {
               Utilisateurs connectés
             </div>
             <div className={styles.users}>
-              {/* Display connected users */}
+              {connectedUsers.map((user, index) => (
+                <div key={index} className={styles.userCard} style={{ backgroundColor: getBackgroundColor(user) }}>
+                  <div className={styles.userAvatar}>
+                    {user.substring(0, 2).toUpperCase()}
+                  </div>
+                  <div className={styles.username}>
+                    {user}
+                  </div>
+                </div>
+              ))}
             </div>
             <div className={styles.footer}>
               <button className={styles.btn} onClick={() => {
@@ -88,7 +111,7 @@ const App = () => {
                 const isMe = msg.userId === userId;
                 const messageClass = isMe ? styles.message + " " + styles.myMessage : styles.message;
                 return (
-                  <div key={index} className={messageClass}>
+                  <div key={index} className={messageClass} style={{ backgroundColor: getBackgroundColor(msg.userId) }}>
                     <span>{msg.userId}</span>
                     <p>{msg.message}</p>
                   </div>

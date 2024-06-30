@@ -39,7 +39,7 @@
       width: 100%;
       overflow-y: auto;
       display: flex;
-      flex-direction: column-reverse; // Reverse the order of the messages
+      flex-direction: column-reverse;
 
       .message {
         background-color: lightgray;
@@ -48,10 +48,10 @@
         align-self: flex-start;
         margin: 0.5em 1em 0.5em 1em;
         border-radius: 10px 10px 10px 0;
+        color: black;
 
         &.myMessage {
           background-color: $primary;
-          color: white;
           align-self: flex-end;
           border-radius: 10px 10px 0 10px;
           text-align: right;
@@ -117,6 +117,7 @@
     justify-content: space-between;
     background-color: $secondary;
     height: 100%;
+    width: 100%;
 
     .header {
       color: white;
@@ -124,6 +125,43 @@
       width: 100%;
       padding: 1em;
       font-size: 1.2em;
+    }
+
+    .users {
+      flex: 1;
+      width: 100%;
+      overflow-y: auto;
+      padding: 1em;
+      display: flex;
+      flex-direction: column;
+      gap: 1em;
+
+      .userCard {
+        display: flex;
+        align-items: center;
+        padding: 0.5em;
+        border-radius: 8px;
+        color: white;
+
+        .userAvatar {
+          width: 2.5em;
+          height: 2.5em;
+          background-color: white;
+          border-radius: 50%;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          font-size: 1.2em;
+          font-weight: bold;
+          margin-right: 0.5em;
+          color: $secondary;
+        }
+
+        .username {
+          font-size: 1em;
+          font-weight: bold;
+        }
+      }
     }
 
     .footer {
