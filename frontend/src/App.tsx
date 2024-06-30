@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
-import axios from 'axios';
 import io from 'socket.io-client';
+import { Auth } from './auth';
+import styles from './App.module.scss'
 
 const SOCKET_SERVER_URL = 'http://localhost:5000';
 
@@ -9,8 +10,8 @@ const App = () => {
   const [messages, setMessages] = useState<any[]>([]);
   const [userId, setUserId] = useState<string | null>(null);
   const socketRef = useRef<any>(null);
-  const [username, setUsername] = useState('');
-  const [password, setPassword] = useState('');
+
+  const [isLogin, setToogleForm] = useState<boolean>(true);
 
   useEffect(() => {
     const storedUserId = localStorage.getItem('username');
@@ -35,19 +36,6 @@ const App = () => {
     }
   }, []);
 
-  const handleLogin = async (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
-    try {
-      const response = await axios.post(`${SOCKET_SERVER_URL}/login`, { username, password });
-      if (response.status === 200) {
-        localStorage.setItem('username', username);
-        setUserId(username);
-        window.location.reload();
-      }
-    } catch (error) {
-      console.error('Login failed', error);
-    }
-  };
 
   const sendMessage = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -62,47 +50,52 @@ const App = () => {
   };
 
   return (
-    <div>
-      {!userId ? (
-        <div>
-          <h1>Login</h1>
-          <form onSubmit={handleLogin}>
-            <input
-              type="text"
-              value={username}
-              onChange={(e) => setUsername(e.target.value)}
-              placeholder="Username"
-              required
-            />
-            <input
-              type="password"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              placeholder="Password"
-              required
-            />
-            <button type="submit">Login</button>
-          </form>
-        </div>
-      ) : (
-        <>
-          <h1>Chat App {localStorage.getItem("username")}</h1>
-          <form onSubmit={sendMessage}>
-            <input
-              type="text"
-              value={message}
-              onChange={(e) => setMessage(e.target.value)}
-              placeholder="Type your message"
-            />
-            <button type="submit">Send</button>
-          </form>
-          <div>
-            <h2>Messages:</h2>
-            {messages.map((msg, index) => (
-              <div key={index}>{msg}</div> // Assurez-vous que chaque message est affiché ici
-            ))}
+    <div className={styles.body}>
+      {!userId ? (<Auth isLogin={isLogin} toogleForm={setToogleForm} />) : (
+
+        <div className={styles.main}>
+          <div className={styles.listUsers}>
+            <div className={styles.header} >
+              Utilisateurs connectés
+            </div>
+
+            <div className={styles.users}>
+
+            </div>
+
+            <div className={styles.footer} >
+              <button className={styles.btn} onClick={() => {
+                localStorage.removeItem('username');
+                window.location.reload();
+              }}>
+                Se déconnecter
+              </button>
+            </div>
           </div>
-        </>
+
+          <div className={styles.chat}>
+            <div className={styles.header} >
+              Chat Room
+            </div>
+            <div className={styles.chat}>
+              {messages.map((msg, index) => (
+                <div key={index}>{msg}</div>
+              ))}
+            </div>
+
+            <form onSubmit={sendMessage} className={styles.footer}>
+              <input
+                className={styles.input}
+                type="text"
+                value={message}
+                onChange={(e) => setMessage(e.target.value)}
+                placeholder="Type your message"
+              />
+                <button type="submit" className={styles.btn}>Send</button>
+            </form>
+
+          </div>
+        </div>
       )}
     </div>
   );

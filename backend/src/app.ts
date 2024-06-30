@@ -115,6 +115,6 @@ server.listen(PORT, () => {
 
 
 //TODO:
-// - FAIRE LE FRONT
+// - FAIRE LE FRONT=
 // - Ajouter une BDD pour les utilisateurs
 // - Ajouter une BDD pour les messages

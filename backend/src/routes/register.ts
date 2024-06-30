@@ -36,8 +36,17 @@ export const register = async (req, res) => {
 
         return res.status(201).json({ message: `User ${username} added successfully` });
 
-    } catch (error) {
-        consola.error('Error registering user', error);
-        return res.status(error.response.status).json({ error: `Failed to add user: ${error.response.data}` });
+    } catch (error: unknown) {
+        consola.error('Error logging in', error);
+        
+        if (typeof error === 'object' && error !== null && 'response' in error) {
+            const errorResponse = (error as { response: { status: number, data?: any } }).response;
+            const status = errorResponse.status;
+            const errorMessage = errorResponse.data?.message || 'Error logging in';
+            
+            res.status(status).json({ message: errorMessage, error });
+        } else {
+            res.status(500).json({ message: 'Error logging in', error });
+        }
     }
 };
