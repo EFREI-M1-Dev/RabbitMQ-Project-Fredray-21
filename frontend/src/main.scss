@@ -1,3 +1,4 @@
+@import 'variables';
 html,
 body {
     margin: 0;
@@ -15,3 +16,17 @@ body {
 * {
     box-sizing: border-box;
 }
+
+::-webkit-scrollbar {
+    width: 10px;
+}
+
+::-webkit-scrollbar-thumb {
+    background-color: $primary;
+    border-radius: 10px;
+}
+
+::-webkit-scrollbar-track {
+    background-color: $secondary;
+}
+

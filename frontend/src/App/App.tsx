@@ -1,15 +1,19 @@
 import React, { useState, useEffect, useRef } from 'react';
 import io from 'socket.io-client';
-import { Auth } from './auth';
-import styles from './App.module.scss'
+import { Auth } from '../Auth/Auth';
+import styles from './App.module.scss';
 
-const SOCKET_SERVER_URL = 'http://localhost:5000';
+interface Message {
+  message: string;
+  userId: string;
+}
 
 const App = () => {
   const [message, setMessage] = useState('');
-  const [messages, setMessages] = useState<any[]>([]);
+  const [messages, setMessages] = useState<Message[]>([]);
   const [userId, setUserId] = useState<string | null>(null);
   const socketRef = useRef<any>(null);
+  const chatMsgRef = useRef<HTMLDivElement>(null);
 
   const [isLogin, setToogleForm] = useState<boolean>(true);
 
@@ -18,7 +22,7 @@ const App = () => {
 
     if (storedUserId) {
       setUserId(storedUserId);
-      const socket = io(SOCKET_SERVER_URL, { query: { userId: storedUserId } });
+      const socket = io(import.meta.env.VITE_SOCKET_SERVER_URL, { query: { userId: storedUserId } });
       socketRef.current = socket;
 
       socket.on('connect', () => {
@@ -27,7 +31,7 @@ const App = () => {
 
       socket.on('chat message', (msg) => {
         console.log('Received message from server:', msg);
-        setMessages(prevMessages => [...prevMessages, msg]);
+        setMessages(prevMessages => [msg, ...prevMessages]); // Add new message at the start
       });
 
       return () => {
@@ -36,12 +40,18 @@ const App = () => {
     }
   }, []);
 
+  useEffect(() => {
+    if (chatMsgRef.current) {
+      chatMsgRef.current.scrollTop = chatMsgRef.current.scrollHeight;
+    }
+  }, [messages]);
 
   const sendMessage = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     if (message.trim()) {
       if (socketRef.current) {
-        socketRef.current.emit('chat message', message);
+        const userId = localStorage.getItem('username');
+        socketRef.current.emit('chat message', { message, userId });
         setMessage('');
       } else {
         console.error('Socket connection not established');
@@ -52,18 +62,15 @@ const App = () => {
   return (
     <div className={styles.body}>
       {!userId ? (<Auth isLogin={isLogin} toogleForm={setToogleForm} />) : (
-
         <div className={styles.main}>
           <div className={styles.listUsers}>
-            <div className={styles.header} >
+            <div className={styles.header}>
               Utilisateurs connectés
             </div>
-
             <div className={styles.users}>
-
+              {/* Display connected users */}
             </div>
-
-            <div className={styles.footer} >
+            <div className={styles.footer}>
               <button className={styles.btn} onClick={() => {
                 localStorage.removeItem('username');
                 window.location.reload();
@@ -72,17 +79,22 @@ const App = () => {
               </button>
             </div>
           </div>
-
           <div className={styles.chat}>
-            <div className={styles.header} >
+            <div className={styles.header}>
               Chat Room
             </div>
-            <div className={styles.chat}>
-              {messages.map((msg, index) => (
-                <div key={index}>{msg}</div>
-              ))}
+            <div className={styles.chatMsg} ref={chatMsgRef}>
+              {messages.map((msg, index) => {
+                const isMe = msg.userId === userId;
+                const messageClass = isMe ? styles.message + " " + styles.myMessage : styles.message;
+                return (
+                  <div key={index} className={messageClass}>
+                    <span>{msg.userId}</span>
+                    <p>{msg.message}</p>
+                  </div>
+                );
+              })}
             </div>
-
             <form onSubmit={sendMessage} className={styles.footer}>
               <input
                 className={styles.input}
@@ -91,9 +103,8 @@ const App = () => {
                 onChange={(e) => setMessage(e.target.value)}
                 placeholder="Type your message"
               />
-                <button type="submit" className={styles.btn}>Send</button>
+              <button type="submit" className={styles.btn}>Send</button>
             </form>
-
           </div>
         </div>
       )}

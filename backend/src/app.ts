@@ -66,8 +66,8 @@ const connectToRabbitMQ = () => {
                     userQueue,
                     (message) => {
                         if (!message || message.content.toString().trim() === '') return;
-                        const msgContent = message.content.toString();
-                        consola.info(`Consumed message from RabbitMQ: ${msgContent}`);
+                        const msgContent = JSON.parse(message.content.toString());
+                        consola.info(`Consumed message from RabbitMQ: ${msgContent.userId} - ${msgContent.message}`);
                         socket.emit('chat message', msgContent);
                     },
                     { noAck: true },
@@ -82,9 +82,9 @@ const connectToRabbitMQ = () => {
 
 
                 socket.on('chat message', (msg) => {
-                    consola.info(`Received message from client: ${msg}`);
-                    channel.publish(EXCHANGE_APP, '', Buffer.from(msg), { persistent: true });
-                    consola.info(`Sent message to RabbitMQ: ${msg}`);
+                    consola.info(`Received message from client: ${msg.userId} - ${msg.message}`);
+                    channel.publish(EXCHANGE_APP, '', Buffer.from(JSON.stringify(msg)), { persistent: true });
+                    consola.info(`Sent message to RabbitMQ: ${msg.userId} - ${msg.message}`);
                 });
 
                 socket.on('disconnect', () => {
@@ -112,9 +112,3 @@ connectToRabbitMQ();
 server.listen(PORT, () => {
     consola.success(`Server started on port ${PORT}`);
 });
-
-
-//TODO:
-// - FAIRE LE FRONT=
-// - Ajouter une BDD pour les utilisateurs
-// - Ajouter une BDD pour les messages
