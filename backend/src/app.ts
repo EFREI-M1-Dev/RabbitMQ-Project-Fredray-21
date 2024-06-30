@@ -36,6 +36,7 @@ export const EXCHANGE_APP = 'exchange_app';
 
 // Dictionary to store active consumers per user
 const activeConsumers = new Map();
+const connectedUsers = new Map();
 
 const connectToRabbitMQ = () => {
     amqp.connect(`amqp://localhost`, (error0, connection) => {
@@ -54,14 +55,13 @@ const connectToRabbitMQ = () => {
                 consola.info('Client connected');
 
                 const userId = socket.handshake.query.userId;
-                const userQueue = `queue_${userId}`;
-                // const userRoutingKey = `key_${userId}`;
+                connectedUsers.set(socket.id, userId);
+                io.emit('update users', Array.from(connectedUsers.values()));
 
-                // Assert user's queue
+                const userQueue = `queue_${userId}`;
                 channel.assertQueue(userQueue, { durable: true });
                 channel.bindQueue(userQueue, EXCHANGE_APP, '');
 
-                // Create consumer for user's queue
                 channel.consume(
                     userQueue,
                     (message) => {
@@ -79,7 +79,6 @@ const connectToRabbitMQ = () => {
                         consola.info(`Consumer created for user ${userId}`);
                     }
                 );
-
 
                 socket.on('chat message', (msg) => {
                     consola.info(`Received message from client: ${msg.userId} - ${msg.message}`);
@@ -99,6 +98,9 @@ const connectToRabbitMQ = () => {
                             activeConsumers.delete(userId);
                         });
                     }
+
+                    connectedUsers.delete(socket.id);
+                    io.emit('update users', Array.from(connectedUsers.values()));
                 });
             });
 
