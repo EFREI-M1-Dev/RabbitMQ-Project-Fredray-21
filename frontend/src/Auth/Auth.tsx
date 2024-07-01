@@ -38,12 +38,12 @@ export const Auth = (props:
     const handleRegister = async (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
         if (password !== confirmPassword) {
-            console.error('Passwords do not match');
+            setError('Passwords do not match');
             return;
         }
         try {
             const response = await axios.post(`${import.meta.env.VITE_SOCKET_SERVER_URL}/register`, { username, password });
-            if (response.status === 200) {
+            if (response.status === 201) {
                 localStorage.setItem('username', username);
                 setError('');
                 window.location.reload();
