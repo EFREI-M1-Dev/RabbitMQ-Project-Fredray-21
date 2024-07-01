@@ -47,6 +47,7 @@ docker run -d --name my-rabbitmq-container -p 5672:5672 -p 15672:15672 my-rabbit
 - http://localhost:4173/
 ```bash
 cd frontend
+npm install
 npm run start:prod
 ```
 
@@ -54,12 +55,19 @@ npm run start:prod
 # Démarrer le backend
 ```bash
 cd backend
+npm install
 npm run start:prod
 ```
 
 ## Note :
 Les fichiers `.env` ont été poussés sur le dépôt pour simplifier le rendu.
 Il est évident qu'il est préférable d'éviter de faire cela dans les projets.
+
+
+# Illustrations :
+
+## 3 clients connecter
+
 
 
 # Rapport de Conception : Architecture du Système
