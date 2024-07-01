@@ -57,6 +57,11 @@ cd backend
 npm run start:prod
 ```
 
+## Note :
+Les fichiers `.env` ont été poussés sur le dépôt pour simplifier le rendu.
+Il est évident qu'il est préférable d'éviter de faire cela dans les projets.
+
+
 # Rapport de Conception : Architecture du Système
 ## Introduction
 Ce rapport présente l'architecture du système pour une application basée sur React et Node.js, utilisant Socket.IO pour la communication en temps réel et RabbitMQ pour la gestion des messages asynchrones. L'objectif principal est de fournir une plateforme de chat permettant aux utilisateurs de s'authentifier, de s'inscrire, et d'échanger des messages en direct.
