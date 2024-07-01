@@ -67,6 +67,17 @@ Il est évident qu'il est préférable d'éviter de faire cela dans les projets.
 # Illustrations :
 
 ## 3 clients connecter
+![illustration](https://github.com/EFREI-M1-Dev/RabbitMQ-Project-Fredray-21/blob/main/illustrationReadme/illustration.png?raw=true)
+
+## Inscription
+![inscription](https://github.com/EFREI-M1-Dev/RabbitMQ-Project-Fredray-21/blob/main/illustrationReadme/inscription.png?raw=true)
+
+## Connexion
+![connexion](https://github.com/EFREI-M1-Dev/RabbitMQ-Project-Fredray-21/blob/main/illustrationReadme/connexion.png?raw=true)
+
+## Logs des actions
+![logs](https://github.com/EFREI-M1-Dev/RabbitMQ-Project-Fredray-21/blob/main/illustrationReadme/log.png?raw=true)
+
 
 
 
