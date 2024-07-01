@@ -44,6 +44,7 @@ docker run -d --name my-rabbitmq-container -p 5672:5672 -p 15672:15672 my-rabbit
 
 
 # Démarrer le frontend
+- http://localhost:4173/
 ```bash
 cd frontend
 npm run start:prod
