@@ -66,10 +66,10 @@ Il est évident qu'il est préférable d'éviter de faire cela dans les projets.
 
 # Illustrations :
 
-## 3 clients connecter
+## 3 clients connecter qui chat
 ![illustration](https://github.com/EFREI-M1-Dev/RabbitMQ-Project-Fredray-21/blob/main/illustrationReadme/illustration.png?raw=true)
 
-## Inscription
+## Inscription et gestion d'erreurs
 ![inscription](https://github.com/EFREI-M1-Dev/RabbitMQ-Project-Fredray-21/blob/main/illustrationReadme/inscription.png?raw=true)
 
 ## Connexion
